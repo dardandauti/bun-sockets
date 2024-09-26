@@ -33,7 +33,8 @@ const bubbleStyle = {
 };
 
 const SOCKET_URL = "ws://localhost:3000";
-//const SOCKET_URL = "ws://192.168.1.226:3000";
+//const SOCKET_URL = "ws://192.168.1.226:3000";//   home
+//const SOCKET_URL = "ws://10.66.246.96:3000"; //   work
 
 function InputContainer() {
   const [connectedUsers, setConnectedUsers] = useState<Record<string, TUser>>();
