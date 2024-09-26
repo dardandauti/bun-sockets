@@ -1,0 +1,13 @@
+input {
+  outline: none;
+}
+
+.inputTest {
+  border: solid 2px green;
+}
+
+.inputTest:focus,
+.inputTest:focus-visible,
+.inputTest:focus-within {
+  border: solid 2px red;
+}
