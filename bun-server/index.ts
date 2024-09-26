@@ -1,8 +1,9 @@
-type TUserData = {
+/* type TUserData = {
   userName: string;
   color: string;
   state: { x: number; y: number };
-};
+}; */
+
 type TUser = {
   userName: string;
   color: string;
@@ -18,12 +19,12 @@ type TInputs = {
 const PORT = 3000;
 
 // const users: { [socketId: string]: TUserData } = {}; Är samma sak som raden under
-const users: Record<string, TUserData> = {};
+/* const users: Record<string, TUserData> = {}; */
 
 const usersList: Record<string, TUser> = {};
 const inputsList: Record<string, TInputs | null> = {};
 
-const messageContainer: {
+const messageDictionary: {
   usersList: typeof usersList | undefined;
   inputsList: typeof inputsList | undefined;
 } = {
@@ -71,9 +72,9 @@ const server = Bun.serve<string>({
       //console.log("open: ", ws);
     },
     message(ws, message) {
+      /* const id = ws.data as keyof typeof users;
       //console.log("message ws: ", ws);
       //console.log("message: ", message);
-      /* const id = ws.data as keyof typeof users;
       const temp: TUserData = JSON.parse(message.toString());
       // Genom att göra såhär så kan vi även skicka med vilken topic som ska visas??
       // alltså kan vi subscribea till olika kanaler genom att skicka den propertyn till specifik kanal.
@@ -88,14 +89,14 @@ const server = Bun.serve<string>({
 
       switch (topic) {
         case "createInputList":
-          messageContainer["inputsList"] = list;
+          messageDictionary["inputsList"] = list;
           break;
         case "addNew":
           usersList[socketID] = {
             userName: userName,
             color: color,
           };
-          messageContainer["usersList"] = { ...usersList };
+          messageDictionary["usersList"] = { ...usersList };
           break;
         case "inputFocused":
           inputsList[inputId] = {
@@ -103,22 +104,22 @@ const server = Bun.serve<string>({
 
             color: color,
           };
-          messageContainer["inputsList"] = { ...inputsList };
+          messageDictionary["inputsList"] = { ...inputsList };
           break;
         case "inputBlurred":
           inputsList[inputId] = null;
-          messageContainer["inputsList"] = { ...inputsList };
+          messageDictionary["inputsList"] = { ...inputsList };
           break;
         case "valueChange":
           inputsList[inputId] = { ...inputsList[inputId], value: value };
-          messageContainer["inputsList"] = { ...inputsList };
+          messageDictionary["inputsList"] = { ...inputsList };
           break;
 
         default:
           break;
       }
 
-      ws.publish("users", JSON.stringify(messageContainer));
+      ws.publish("users", JSON.stringify(messageDictionary));
     },
     close(ws) {
       /* const id = ws.data as keyof typeof users;
@@ -126,13 +127,13 @@ const server = Bun.serve<string>({
 
       delete users[id];
       console.log("Client connection closed", id);
-      */
       //console.log("close: ", ws.data);
+      */
       const socketID = ws.data.toString();
       delete usersList[socketID];
 
-      const m = { ...messageContainer, usersList: usersList };
-      ws.publish("users", JSON.stringify(m));
+      messageDictionary["usersList"] = usersList;
+      ws.publish("users", JSON.stringify(messageDictionary));
     },
   },
 });

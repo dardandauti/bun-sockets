@@ -123,9 +123,6 @@ function InputContainer() {
                   >
                     {user.userName[0]}
                   </div>
-                  {/* <Avatar color={`${user.color}8D`} variant="filled">
-                    {user.userName[0]}
-                  </Avatar> */}
                 </Tooltip>
               ))}
           </>
@@ -166,7 +163,6 @@ function InputContainer() {
               ? inputsList["abcdef"]?.currentUser !== me?.userName
               : false
           }
-          // Disable this to test input-blocker
           onBlur={(e) => {
             sendJsonMessage({
               topic: "inputBlurred",
@@ -206,7 +202,6 @@ function InputContainer() {
               ? inputsList["input2"]?.currentUser !== me?.userName
               : false
           }
-          // Disable this to test input-blocker
           onBlur={(e) => {
             sendJsonMessage({
               topic: "inputBlurred",
