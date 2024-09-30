@@ -50,7 +50,6 @@ const server = Bun.serve<string>({
     publishToSelf: true,
     open(ws) {
       ws.subscribe("general");
-      ws.subscribe("users");
 
       /* const userName = `${colors[Math.floor(Math.random() * 20)]}_${
         animals[Math.floor(Math.random() * 20)]
@@ -70,6 +69,7 @@ const server = Bun.serve<string>({
         ws.publish("general", `The user ${user.userName} has joined!`);
         */
       //console.log("open: ", ws);
+      ws.publish("general", JSON.stringify(messageDictionary));
     },
     message(ws, message) {
       /* const id = ws.data as keyof typeof users;
@@ -119,7 +119,7 @@ const server = Bun.serve<string>({
           break;
       }
 
-      ws.publish("users", JSON.stringify(messageDictionary));
+      ws.publish("general", JSON.stringify(messageDictionary));
     },
     close(ws) {
       /* const id = ws.data as keyof typeof users;
@@ -133,7 +133,7 @@ const server = Bun.serve<string>({
       delete usersList[socketID];
 
       messageDictionary["usersList"] = usersList;
-      ws.publish("users", JSON.stringify(messageDictionary));
+      ws.publish("general", JSON.stringify(messageDictionary));
     },
   },
 });
