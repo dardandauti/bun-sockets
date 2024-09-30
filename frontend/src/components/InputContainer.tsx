@@ -1,6 +1,7 @@
-import { Avatar, Tooltip } from "@mantine/core";
+import { Tooltip } from "@mantine/core";
 import { useEffect, useLayoutEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
+import classes from "./Home.module.scss";
 
 type TUser = {
   userName: string;
@@ -41,6 +42,7 @@ function InputContainer() {
   const [inputsList, setInputsList] =
     useState<Record<string, TInputs | null>>();
   const [me, setMe] = useState<TUser | null>(null);
+  const borderRadius = "6px";
 
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(SOCKET_URL, {
     onOpen: () => {
@@ -89,7 +91,7 @@ function InputContainer() {
 
     childList &&
       Array.from(childList)
-        .filter((child) => child.nodeName === "INPUT")
+        .filter((child) => child.id.includes("input"))
         .forEach((child) => (list[child.id] = null));
 
     setInputsList(list);
@@ -131,86 +133,120 @@ function InputContainer() {
       </div>
       <div
         id="parent"
-        style={{ display: "flex", gap: 8, flexDirection: "column" }}
+        style={{
+          display: "flex",
+          gap: 8,
+          flexDirection: "column",
+          width: "fit-content",
+        }}
       >
-        <input
-          id="abcdef"
-          style={
-            inputsList?.["abcdef"]?.currentUser
-              ? {
-                  border: `solid 2px ${inputsList?.["abcdef"].color}`,
-                }
-              : undefined
-          }
-          value={inputsList?.["abcdef"]?.value}
-          onChange={(e) => {
-            inputsList?.["abcdef"]?.value;
-            sendJsonMessage({
-              topic: "valueChange",
-              inputId: e.target.id,
-              value: e.target.value,
-            });
-          }}
-          onFocus={(e) => {
-            sendJsonMessage({
-              topic: "inputFocused",
-              inputId: e.target.id,
-              userName: me?.userName,
-              color: me?.color,
-            });
-          }}
-          disabled={
-            inputsList?.["abcdef"]?.currentUser
-              ? inputsList["abcdef"]?.currentUser !== me?.userName
-              : false
-          }
-          onBlur={(e) => {
-            sendJsonMessage({
-              topic: "inputBlurred",
-              inputId: e.target.id,
-              userName: me?.userName,
-            });
-          }}
-        />
-        <input
-          id="input2"
-          style={
-            inputsList?.["input2"]?.currentUser
-              ? {
-                  border: `solid 2px ${inputsList?.["input2"].color}`,
-                }
-              : undefined
-          }
-          value={inputsList?.["input2"]?.value}
-          onChange={(e) => {
-            inputsList?.["input2"]?.value;
-            sendJsonMessage({
-              topic: "valueChange",
-              inputId: e.target.id,
-              value: e.target.value,
-            });
-          }}
-          onFocus={(e) => {
-            sendJsonMessage({
-              topic: "inputFocused",
-              inputId: e.target.id,
-              userName: me?.userName,
-              color: me?.color,
-            });
-          }}
-          disabled={
-            inputsList?.["input2"]?.currentUser
-              ? inputsList["input2"]?.currentUser !== me?.userName
-              : false
-          }
-          onBlur={(e) => {
-            sendJsonMessage({
-              topic: "inputBlurred",
-              inputId: e.target.id,
-              userName: me?.userName,
-            });
-          }}
-        />
+        <div id="input1_wrapper" className={classes.inputWrapper}>
+          {inputsList?.["input1"]?.currentUser && (
+            <p
+              style={{
+                backgroundColor: inputsList?.["input1"]?.color,
+              }}
+              className={classes.inputName}
+            >
+              {inputsList?.["input1"]?.currentUser}
+            </p>
+          )}
+          <input
+            id="input1"
+            style={
+              inputsList?.["input1"]?.currentUser
+                ? {
+                    border: `solid 2px ${inputsList?.["input1"]?.color}`,
+                    borderRadius: `${borderRadius} 0px ${borderRadius} ${borderRadius}`,
+                  }
+                : undefined
+            }
+            className={classes.input}
+            defaultValue={inputsList?.["input1"]?.value}
+            value={inputsList?.["input1"]?.value}
+            onChange={(e) => {
+              sendJsonMessage({
+                topic: "valueChange",
+                inputId: e.target.id,
+                value: e.target.value,
+              });
+            }}
+            onFocus={(e) => {
+              sendJsonMessage({
+                topic: "inputFocused",
+                inputId: e.target.id,
+                userName: me?.userName,
+                color: me?.color,
+              });
+            }}
+            disabled={
+              inputsList?.["input1"]?.currentUser
+                ? inputsList["input1"]?.currentUser !== me?.userName
+                : false
+            }
+            onBlur={(e) => {
+              sendJsonMessage({
+                topic: "inputBlurred",
+                inputId: e.target.id,
+                userName: me?.userName,
+              });
+            }}
+          />
+        </div>
+
+        <div id="input2_wrapper" className={classes.inputWrapper}>
+          {inputsList?.["input2"]?.currentUser && (
+            <p
+              style={{
+                backgroundColor: inputsList?.["input2"]?.color,
+              }}
+              className={classes.inputName}
+            >
+              {inputsList?.["input2"]?.currentUser}
+            </p>
+          )}
+          <input
+            id="input2"
+            style={
+              inputsList?.["input2"]?.currentUser
+                ? {
+                    border: `solid 2px ${inputsList?.["input2"]?.color}`,
+                    borderRadius: `${borderRadius} 0px ${borderRadius} ${borderRadius}`,
+                  }
+                : undefined
+            }
+            className={classes.input}
+            value={inputsList?.["input2"]?.value}
+            onChange={(e) => {
+              sendJsonMessage({
+                topic: "valueChange",
+                inputId: e.target.id,
+                value: e.target.value,
+              });
+            }}
+            onFocus={(e) => {
+              sendJsonMessage({
+                topic: "inputFocused",
+                inputId: e.target.id,
+                userName: me?.userName,
+                color: me?.color,
+              });
+            }}
+            disabled={
+              inputsList?.["input2"]?.currentUser
+                ? inputsList["input2"]?.currentUser !== me?.userName
+                : false
+            }
+            onBlur={(e) => {
+              sendJsonMessage({
+                topic: "inputBlurred",
+                inputId: e.target.id,
+                userName: me?.userName,
+              });
+            }}
+          />
+        </div>
+
         <div style={{ display: "flex", flexDirection: "column" }}>
           {/* <p>Connected users: {JSON.stringify(connectedUsers)?.toString()}</p> */}
           {/* <p>Inputs: {JSON.stringify(inputsList)?.toString()}</p> */}
