@@ -1,24 +1,7 @@
 import { Tooltip } from "@mantine/core";
-import { useEffect, useLayoutEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
 import classes from "./Home.module.scss";
-
-type TUser = {
-  userName: string;
-  color: string;
-  currentInput?: string;
-};
-
-type TInputs = {
-  currentUser: string;
-  value: string;
-  color: string;
-};
-
-type TMessageContainer = {
-  usersList: Record<string, TUser>;
-  inputsList: Record<string, TInputs>;
-};
+import { useContext } from "react";
+import { CanvasContext, IContextProps } from "../context/CanvasContextProvider";
 
 const bubbleStyle = {
   borderRadius: "50%",
@@ -33,69 +16,12 @@ const bubbleStyle = {
   alignItems: "center",
 };
 
-const SOCKET_URL = "ws://localhost:3000";
-//const SOCKET_URL = "ws://192.168.1.226:3000";//   home
-//const SOCKET_URL = "ws://10.66.246.96:3000"; //   work
-
 function InputContainer() {
-  const [connectedUsers, setConnectedUsers] = useState<Record<string, TUser>>();
-  const [inputsList, setInputsList] =
-    useState<Record<string, TInputs | null>>();
-  const [me, setMe] = useState<TUser | null>(null);
+  const { connectedUsers, me, inputsList, sendJsonMessage } = useContext(
+    CanvasContext
+  ) as IContextProps;
+
   const borderRadius = "6px";
-
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket(SOCKET_URL, {
-    onOpen: () => {
-      // Skicka med den nya användarens information (namn och färg)
-      const userName = `${colors[Math.floor(Math.random() * 20)]}_${
-        animals[Math.floor(Math.random() * 20)]
-      }`;
-      const color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-
-      sendJsonMessage({
-        topic: "createInputList",
-        inputsList,
-      });
-
-      sendJsonMessage({
-        topic: "addNew",
-        userName,
-        color,
-      });
-
-      setMe({
-        userName,
-        color,
-      });
-    },
-    onClose: () => {
-      sendJsonMessage({
-        userName: me?.userName,
-      });
-    },
-  });
-
-  useEffect(() => {
-    if (lastJsonMessage) {
-      const typedResponse = lastJsonMessage as TMessageContainer;
-      setConnectedUsers(typedResponse.usersList);
-      setInputsList(typedResponse.inputsList);
-    }
-  }, [lastJsonMessage]);
-
-  useLayoutEffect(() => {
-    const childList = document.getElementById("parent")
-      ?.children as HTMLCollection;
-
-    const list: Record<string, TInputs | null> = {};
-
-    childList &&
-      Array.from(childList)
-        .filter((child) => child.id.includes("input"))
-        .forEach((child) => (list[child.id] = null));
-
-    setInputsList(list);
-  }, []);
 
   return (
     <div>
@@ -120,7 +46,7 @@ function InputContainer() {
             {Object.values(connectedUsers)
               .filter((user) => user.userName !== me?.userName)
               .map((user) => (
-                <Tooltip label={user.userName}>
+                <Tooltip key={user.color} label={user.userName}>
                   <div
                     style={{ ...bubbleStyle, background: `${user.color}8D` }}
                   >
@@ -148,7 +74,9 @@ function InputContainer() {
               }}
               className={classes.inputName}
             >
-              {inputsList?.["input1"]?.currentUser}
+              {inputsList?.["input1"]?.currentUser !== me?.userName
+                ? inputsList?.["input1"]?.currentUser
+                : "Me"}
             </p>
           )}
           <input
@@ -202,7 +130,9 @@ function InputContainer() {
               }}
               className={classes.inputName}
             >
-              {inputsList?.["input2"]?.currentUser}
+              {inputsList?.["input2"]?.currentUser !== me?.userName
+                ? inputsList?.["input2"]?.currentUser
+                : "Me"}
             </p>
           )}
           <input
@@ -258,49 +188,3 @@ function InputContainer() {
 }
 
 export default InputContainer;
-
-const animals = [
-  "Lion",
-  "Elephant",
-  "Giraffe",
-  "Tiger",
-  "Zebra",
-  "Kangaroo",
-  "Dolphin",
-  "Penguin",
-  "Gorilla",
-  "Bear",
-  "Koala",
-  "Rhino",
-  "Cheetah",
-  "Crocodile",
-  "Eagle",
-  "Panda",
-  "Shark",
-  "Wolf",
-  "Fox",
-  "Owl",
-];
-
-const colors = [
-  "Red",
-  "Blue",
-  "Green",
-  "Yellow",
-  "Purple",
-  "Orange",
-  "Pink",
-  "Black",
-  "White",
-  "Gray",
-  "Brown",
-  "Violet",
-  "Cyan",
-  "Magenta",
-  "Teal",
-  "Maroon",
-  "Beige",
-  "Turquoise",
-  "Lavender",
-  "Gold",
-];
