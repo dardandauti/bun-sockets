@@ -31,6 +31,7 @@ function InputContainer() {
           flex: 0,
           flexDirection: "row",
           alignItems: "center",
+          justifyContent: "center",
           gap: 8,
           marginBottom: 32,
         }}
@@ -63,7 +64,6 @@ function InputContainer() {
           display: "flex",
           gap: 8,
           flexDirection: "column",
-          width: "fit-content",
         }}
       >
         <div id="input1_wrapper" className={classes.inputWrapper}>

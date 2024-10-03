@@ -7,6 +7,7 @@ import {
   IContextProps,
   TMessageContainer,
 } from "../../context/CanvasContextProvider";
+import { DndListHandle } from "../../components/DndListHandle";
 
 function renderCursors(
   messageContainer: TMessageContainer,
@@ -17,7 +18,9 @@ function renderCursors(
   if (Object.keys(users).length > 0) {
     return Object.keys(users).map((uuid) => {
       const user = users[uuid];
+
       if (user.userName === currentUser) return;
+
       return (
         <Cursor
           key={uuid}
@@ -53,6 +56,8 @@ const Canvas = () => {
     <div>
       <h1>Canvas</h1>
       <InputContainer />
+      <DndListHandle />
+
       {lastJsonMessage ? (
         renderCursors(
           lastJsonMessage as TMessageContainer,
