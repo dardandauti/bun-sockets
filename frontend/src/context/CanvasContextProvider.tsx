@@ -9,10 +9,13 @@ import { animals, colors } from "../assets/username_properties";
 import useWebSocket from "react-use-websocket";
 import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
 
+export type TUserPosition = { x: number; y: number };
+
 export type TUser = {
   userName: string;
   color: string;
   currentInput?: string;
+  position: TUserPosition;
 };
 
 export type TInputs = {
@@ -35,8 +38,10 @@ export type IContextProps = {
   setInputsList: React.Dispatch<
     React.SetStateAction<Record<string, TInputs | null> | undefined>
   >;
-  me: TUser | null;
-  setMe: React.Dispatch<React.SetStateAction<TUser | null>>;
+  me: Pick<TUser, "userName" | "color"> | null;
+  setMe: React.Dispatch<
+    React.SetStateAction<Pick<TUser, "userName" | "color"> | null>
+  >;
   sendJsonMessage: SendJsonMessage;
   lastJsonMessage: unknown;
 };
@@ -49,7 +54,7 @@ const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
   const [connectedUsers, setConnectedUsers] = useState<Record<string, TUser>>();
   const [inputsList, setInputsList] =
     useState<Record<string, TInputs | null>>();
-  const [me, setMe] = useState<TUser | null>(null);
+  const [me, setMe] = useState<Pick<TUser, "userName" | "color"> | null>(null);
 
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(SOCKET_URL, {
     onOpen: () => {
@@ -68,6 +73,10 @@ const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
         topic: "addNew",
         userName,
         color,
+        position: {
+          x: 0,
+          y: 0,
+        },
       });
 
       setMe({
