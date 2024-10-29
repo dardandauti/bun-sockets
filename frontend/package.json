@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "work": "vite --host --mode work"
+    "work": "vite --host --mode work",
+    "test": "vitest"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.6.0",
@@ -38,6 +39,7 @@
     "sass-embedded": "^1.79.4",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "vitest": "^2.1.3"
   }
 }

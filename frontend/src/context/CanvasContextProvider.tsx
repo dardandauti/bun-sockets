@@ -8,6 +8,7 @@ import {
 import { animals, colors } from "../assets/username_properties";
 import useWebSocket from "react-use-websocket";
 import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
+import { useListState, UseListStateHandlers } from "@mantine/hooks";
 
 export type TUserPosition = { x: number; y: number };
 
@@ -24,9 +25,17 @@ export type TInputs = {
   color: string;
 };
 
+export type TListItem = {
+  position: number;
+  mass: number;
+  symbol: string;
+  name: string;
+};
+
 export type TMessageContainer = {
   usersList: Record<string, TUser>;
   inputsList: Record<string, TInputs>;
+  dndList: TListItem[];
 };
 
 export type IContextProps = {
@@ -44,7 +53,17 @@ export type IContextProps = {
   >;
   sendJsonMessage: SendJsonMessage;
   lastJsonMessage: unknown;
+  state: TListItem[];
+  handlers: UseListStateHandlers<TListItem>;
 };
+
+const data: TListItem[] = [
+  { position: 6, mass: 12.011, symbol: "C", name: "Carbon" },
+  { position: 7, mass: 14.007, symbol: "N", name: "Nitrogen" },
+  { position: 39, mass: 88.906, symbol: "Y", name: "Yttrium" },
+  { position: 56, mass: 137.33, symbol: "Ba", name: "Barium" },
+  { position: 58, mass: 140.12, symbol: "Ce", name: "Cerium" },
+];
 
 const SOCKET_URL = `ws://${import.meta.env.VITE_SOCKET_URL}:3000`;
 
@@ -55,6 +74,7 @@ const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
   const [inputsList, setInputsList] =
     useState<Record<string, TInputs | null>>();
   const [me, setMe] = useState<Pick<TUser, "userName" | "color"> | null>(null);
+  const [state, handlers] = useListState(data);
 
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(SOCKET_URL, {
     onOpen: () => {
@@ -124,6 +144,8 @@ const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
         setMe,
         sendJsonMessage,
         lastJsonMessage,
+        state,
+        handlers,
       }}
     >
       {children}

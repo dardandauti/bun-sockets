@@ -13,6 +13,13 @@ type TInputs = {
   color?: string;
 };
 
+type TListItem = {
+  position: number;
+  mass: number;
+  symbol: string;
+  name: string;
+};
+
 const PORT = 3000;
 
 // const users: { [socketId: string]: TUserData } = {}; Är samma sak som raden under
@@ -20,13 +27,16 @@ const PORT = 3000;
 
 const usersList: Record<string, TUser> = {};
 const inputsList: Record<string, TInputs | null> = {};
+const dndList: TListItem[] = [];
 
 const messageDictionary: {
   usersList: typeof usersList | undefined;
   inputsList: typeof inputsList | undefined;
+  dndList: typeof dndList | undefined;
 } = {
   usersList: undefined,
   inputsList: undefined,
+  dndList: undefined,
 };
 
 const server = Bun.serve<string>({
@@ -85,6 +95,10 @@ const server = Bun.serve<string>({
           usersList[socketID] = { ...usersList[socketID], position: position };
           messageDictionary["usersList"] = { ...usersList };
           break;
+        case "dragEnd":
+          // Skicka tillbaka den nya listan
+          messageDictionary["dndList"] = list;
+          break;
 
         default:
           break;
@@ -103,3 +117,25 @@ const server = Bun.serve<string>({
 });
 
 console.log(`Listening on localhost:${server.port}`);
+
+const dndServer = Bun.serve({
+  port: 3009,
+  fetch(req) {
+    const upgraded = dndServer.upgrade(req, {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+
+    if (upgraded) return undefined;
+  },
+  websocket: {
+    publishToSelf: true,
+    open(ws) {
+      ws.subscribe("hehe");
+    },
+    message(ws, message) {
+      ws.publish("hehe", message);
+    },
+  },
+});
