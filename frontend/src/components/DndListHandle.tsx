@@ -9,27 +9,26 @@ import {
   CanvasContext,
   IContextProps,
   TListItem,
-  TMessageContainer,
 } from "../context/CanvasContextProvider";
 import useWebSocket from "react-use-websocket";
 
 const data: TListItem[] = [
-  { position: 6, mass: 12.011, symbol: "C", name: "Carbon" },
-  { position: 7, mass: 14.007, symbol: "N", name: "Nitrogen" },
-  { position: 39, mass: 88.906, symbol: "Y", name: "Yttrium" },
-  { position: 56, mass: 137.33, symbol: "Ba", name: "Barium" },
-  { position: 58, mass: 140.12, symbol: "Ce", name: "Cerium" },
+  { position: 6, mass: 12.011, symbol: "C", name: "Carbon", color: "" },
+  { position: 7, mass: 14.007, symbol: "N", name: "Nitrogen", color: "" },
+  { position: 39, mass: 88.906, symbol: "Y", name: "Yttrium", color: "" },
+  { position: 56, mass: 137.33, symbol: "Ba", name: "Barium", color: "" },
+  { position: 58, mass: 140.12, symbol: "Ce", name: "Cerium", color: "" },
 ];
 
 export function DndListHandle() {
-  /*   const { sendJsonMessage, lastJsonMessage, state, handlers } = useContext(
+  const { sendJsonMessage, lastJsonMessage, state, handlers, me } = useContext(
     CanvasContext
-  ) as IContextProps; */
-  const [state, handlers] = useListState(data);
+  ) as IContextProps;
+  /*   const [state, handlers] = useListState(data);
 
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(
     "ws://localhost:3009"
-  );
+  ); */
 
   const getItems = (list: TListItem[]) =>
     list.map((item, index) => (
@@ -41,6 +40,15 @@ export function DndListHandle() {
             })}
             ref={provided.innerRef}
             {...provided.draggableProps}
+            style={
+              snapshot.isDragging
+                ? {
+                    ...provided.draggableProps.style,
+                    border: `2px solid ${item?.color}`,
+                    transitionDuration: `0.001s`,
+                  }
+                : { ...provided.draggableProps.style }
+            }
           >
             <div {...provided.dragHandleProps} className={classes.dragHandle}>
               <IconGripVertical
@@ -62,11 +70,12 @@ export function DndListHandle() {
 
   const memoizedItems = useMemo(
     () =>
-      (lastJsonMessage as { topic: string; list: TListItem[] }) &&
-      getItems(
-        (lastJsonMessage as { topic: string; list: TListItem[] })
-          .list as TListItem[]
-      ),
+      (lastJsonMessage as { topic: string; dndList: TListItem[] })
+        ? getItems(
+            (lastJsonMessage as { topic: string; dndList: TListItem[] })
+              .dndList as TListItem[]
+          )
+        : getItems(state),
     [lastJsonMessage]
   );
 
@@ -74,19 +83,33 @@ export function DndListHandle() {
     if (lastJsonMessage) {
       const container = lastJsonMessage as any;
 
-      //container.list?.length > 0 && handlers.setState(container.list);
+      container.list?.length > 0 && handlers.setState(container.list);
     }
   }, [lastJsonMessage]); */
+  let draggableId = "";
 
   useEffect(() => {
     sendJsonMessage({
       topic: "dragEnd",
       list: state,
+      draggedId: draggableId,
     });
   }, [state]);
 
   return (
     <DragDropContext
+      /*       onBeforeDragStart={(start) => {
+        console.log(start);
+      }} */
+      onDragStart={(node, provided) => {
+        console.log(node.draggableId);
+        draggableId = node.draggableId;
+        sendJsonMessage({
+          topic: "dragStart",
+          draggedId: node.draggableId,
+          list: state,
+        });
+      }}
       onDragEnd={({ destination, source }) =>
         handlers.reorder({
           from: source.index,

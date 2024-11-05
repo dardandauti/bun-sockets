@@ -18,6 +18,7 @@ type TListItem = {
   mass: number;
   symbol: string;
   name: string;
+  color: string;
 };
 
 const PORT = 3000;
@@ -61,8 +62,16 @@ const server = Bun.serve<string>({
     },
     message(ws, message) {
       const socketID = ws.data.toString();
-      const { topic, userName, color, inputId, list, value, position } =
-        typeof message === "string" ? JSON.parse(message) : null;
+      const {
+        topic,
+        userName,
+        color,
+        inputId,
+        list,
+        value,
+        position,
+        draggedId,
+      } = typeof message === "string" ? JSON.parse(message) : null;
 
       switch (topic) {
         case "createInputList":
@@ -94,6 +103,16 @@ const server = Bun.serve<string>({
         case "mouseMove":
           usersList[socketID] = { ...usersList[socketID], position: position };
           messageDictionary["usersList"] = { ...usersList };
+          break;
+        case "dragStart":
+          if (messageDictionary["dndList"]) {
+            const temp = list.findIndex(
+              (item: TListItem) => item.symbol === draggedId
+            );
+
+            list[temp] = { ...list[temp], color: usersList[socketID].color };
+            messageDictionary["dndList"] = list;
+          }
           break;
         case "dragEnd":
           // Skicka tillbaka den nya listan
@@ -135,7 +154,17 @@ const dndServer = Bun.serve({
       ws.subscribe("hehe");
     },
     message(ws, message) {
-      ws.publish("hehe", message);
+      const socketID = ws.data?.toString();
+      const { topic, draggedId } =
+        typeof message === "string" ? JSON.parse(message) : null;
+
+      switch (topic) {
+        case "dragStart":
+          break;
+        default:
+          break;
+      }
+      ws.publish("hehe", JSON.stringify(messageDictionary));
     },
   },
 });
