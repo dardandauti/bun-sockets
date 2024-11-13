@@ -7,7 +7,6 @@ import {
   IContextProps,
   TMessageContainer,
 } from "../../context/CanvasContextProvider";
-import { DndListHandle } from "../../components/DndListHandle";
 
 function renderCursors(
   messageContainer: TMessageContainer,
@@ -56,8 +55,6 @@ const Canvas = () => {
     <div>
       <h1>Canvas</h1>
       <InputContainer />
-      <DndListHandle />
-
       {lastJsonMessage ? (
         renderCursors(
           lastJsonMessage as TMessageContainer,

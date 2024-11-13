@@ -1,7 +1,8 @@
-import { Tooltip } from "@mantine/core";
-import classes from "./Home.module.scss";
-import { useContext } from "react";
+import { ActionIcon, Tooltip } from "@mantine/core";
+import classes from "./InputContainer.module.scss";
+import { useContext, useMemo } from "react";
 import { CanvasContext, IContextProps } from "../context/CanvasContextProvider";
+import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
 
 const bubbleStyle = {
   borderRadius: "50%",
@@ -17,11 +18,103 @@ const bubbleStyle = {
 };
 
 function InputContainer() {
-  const { connectedUsers, me, inputsList, sendJsonMessage } = useContext(
-    CanvasContext
-  ) as IContextProps;
+  const { connectedUsers, me, containerList, sendJsonMessage, move } =
+    useContext(CanvasContext) as IContextProps;
 
   const borderRadius = "6px";
+
+  const items = useMemo(
+    () =>
+      containerList?.map((item, index) => (
+        <div key={item.id} className={classes.container}>
+          <div id={`${item.id}_wrapper`} className={classes.inputWrapper}>
+            {containerList[index].occupied && (
+              <p
+                style={{
+                  backgroundColor: containerList[index].occupied.color,
+                }}
+                className={classes.inputName}
+              >
+                {containerList[index].occupied.user !== me?.userName
+                  ? containerList[index].occupied.user
+                  : "Me"}
+              </p>
+            )}
+            <input
+              placeholder={item.id}
+              id={containerList[index].id}
+              style={
+                containerList[index].occupied
+                  ? {
+                      border: `solid 2px ${containerList[index].occupied.color}`,
+                      borderRadius: `${borderRadius} 0px ${borderRadius} ${borderRadius}`,
+                    }
+                  : undefined
+              }
+              className={classes.input}
+              value={containerList[index].content}
+              onChange={(e) => {
+                sendJsonMessage({
+                  topic: "valueChange",
+                  inputId: e.target.id,
+                  value: e.target.value,
+                });
+              }}
+              onFocus={(e) => {
+                sendJsonMessage({
+                  topic: "inputFocused",
+                  inputId: e.target.id,
+                  userName: me?.userName,
+                  color: me?.color,
+                });
+              }}
+              disabled={
+                containerList[index].occupied
+                  ? containerList[index].occupied.user !== me?.userName
+                  : false
+              }
+              onBlur={(e) => {
+                sendJsonMessage({
+                  topic: "inputBlurred",
+                  inputId: e.target.id,
+                  userName: me?.userName,
+                });
+              }}
+            />
+          </div>
+
+          <div key={item.id} className={classes.item} style={{ gap: "16px" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <ActionIcon
+                variant="subtle"
+                disabled={
+                  index === 0 ||
+                  (containerList[index].occupied
+                    ? containerList[index].occupied.user !== me?.userName
+                    : false)
+                }
+                onClick={() => move(index, index - 1)}
+              >
+                <IconArrowUp />
+              </ActionIcon>
+              <ActionIcon
+                variant="subtle"
+                disabled={
+                  index === containerList.length - 1 ||
+                  (containerList[index].occupied
+                    ? containerList[index].occupied.user !== me?.userName
+                    : false)
+                }
+                onClick={() => move(index, index + 1)}
+              >
+                <IconArrowDown />
+              </ActionIcon>
+            </div>
+          </div>
+        </div>
+      )),
+    [containerList]
+  );
 
   return (
     <div>
@@ -66,122 +159,7 @@ function InputContainer() {
           flexDirection: "column",
         }}
       >
-        <div id="input1_wrapper" className={classes.inputWrapper}>
-          {inputsList?.["input1"]?.currentUser && (
-            <p
-              style={{
-                backgroundColor: inputsList?.["input1"]?.color,
-              }}
-              className={classes.inputName}
-            >
-              {inputsList?.["input1"]?.currentUser !== me?.userName
-                ? inputsList?.["input1"]?.currentUser
-                : "Me"}
-            </p>
-          )}
-          <input
-            id="input1"
-            style={
-              inputsList?.["input1"]?.currentUser
-                ? {
-                    border: `solid 2px ${inputsList?.["input1"]?.color}`,
-                    borderRadius: `${borderRadius} 0px ${borderRadius} ${borderRadius}`,
-                  }
-                : undefined
-            }
-            className={classes.input}
-            defaultValue={inputsList?.["input1"]?.value}
-            value={inputsList?.["input1"]?.value}
-            onChange={(e) => {
-              sendJsonMessage({
-                topic: "valueChange",
-                inputId: e.target.id,
-                value: e.target.value,
-              });
-            }}
-            onFocus={(e) => {
-              sendJsonMessage({
-                topic: "inputFocused",
-                inputId: e.target.id,
-                userName: me?.userName,
-                color: me?.color,
-              });
-            }}
-            disabled={
-              inputsList?.["input1"]?.currentUser
-                ? inputsList["input1"]?.currentUser !== me?.userName
-                : false
-            }
-            onBlur={(e) => {
-              sendJsonMessage({
-                topic: "inputBlurred",
-                inputId: e.target.id,
-                userName: me?.userName,
-              });
-            }}
-          />
-        </div>
-
-        <div id="input2_wrapper" className={classes.inputWrapper}>
-          {inputsList?.["input2"]?.currentUser && (
-            <p
-              style={{
-                backgroundColor: inputsList?.["input2"]?.color,
-              }}
-              className={classes.inputName}
-            >
-              {inputsList?.["input2"]?.currentUser !== me?.userName
-                ? inputsList?.["input2"]?.currentUser
-                : "Me"}
-            </p>
-          )}
-          <input
-            id="input2"
-            style={
-              inputsList?.["input2"]?.currentUser
-                ? {
-                    border: `solid 2px ${inputsList?.["input2"]?.color}`,
-                    borderRadius: `${borderRadius} 0px ${borderRadius} ${borderRadius}`,
-                  }
-                : undefined
-            }
-            className={classes.input}
-            value={inputsList?.["input2"]?.value}
-            onChange={(e) => {
-              sendJsonMessage({
-                topic: "valueChange",
-                inputId: e.target.id,
-                value: e.target.value,
-              });
-            }}
-            onFocus={(e) => {
-              sendJsonMessage({
-                topic: "inputFocused",
-                inputId: e.target.id,
-                userName: me?.userName,
-                color: me?.color,
-              });
-            }}
-            disabled={
-              inputsList?.["input2"]?.currentUser
-                ? inputsList["input2"]?.currentUser !== me?.userName
-                : false
-            }
-            onBlur={(e) => {
-              sendJsonMessage({
-                topic: "inputBlurred",
-                inputId: e.target.id,
-                userName: me?.userName,
-              });
-            }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          {/* <p>Connected users: {JSON.stringify(connectedUsers)?.toString()}</p> */}
-          {/* <p>Inputs: {JSON.stringify(inputsList)?.toString()}</p> */}
-          {/* <p>Me: {JSON.stringify(me)?.toString()}</p> */}
-        </div>
+        {items}
       </div>
     </div>
   );

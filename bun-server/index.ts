@@ -7,18 +7,16 @@ type TUser = {
   position: TUserPosition;
 };
 
-type TInputs = {
-  currentUser?: string;
-  value?: string;
-  color?: string;
+type TContainerColor = {
+  user: string;
+  color: string;
 };
 
-type TListItem = {
-  position: number;
-  mass: number;
-  symbol: string;
-  name: string;
-  color: string;
+type TContentContainer = {
+  id: string;
+  type: string;
+  content: string;
+  occupied: TContainerColor | null;
 };
 
 const PORT = 3000;
@@ -27,17 +25,13 @@ const PORT = 3000;
 // const users: Record<string, TUserData> = {};
 
 const usersList: Record<string, TUser> = {};
-const inputsList: Record<string, TInputs | null> = {};
-const dndList: TListItem[] = [];
 
 const messageDictionary: {
   usersList: typeof usersList | undefined;
-  inputsList: typeof inputsList | undefined;
-  dndList: typeof dndList | undefined;
+  containerList: TContentContainer[];
 } = {
   usersList: undefined,
-  inputsList: undefined,
-  dndList: undefined,
+  containerList: [],
 };
 
 const server = Bun.serve<string>({
@@ -67,15 +61,16 @@ const server = Bun.serve<string>({
         userName,
         color,
         inputId,
+        containerList,
         list,
         value,
         position,
-        draggedId,
       } = typeof message === "string" ? JSON.parse(message) : null;
 
       switch (topic) {
         case "createInputList":
-          messageDictionary["inputsList"] = list;
+          messageDictionary["containerList"] =
+            containerList as typeof messageDictionary.containerList;
           break;
         case "addNew":
           usersList[socketID] = {
@@ -86,39 +81,45 @@ const server = Bun.serve<string>({
           messageDictionary["usersList"] = { ...usersList };
           break;
         case "inputFocused":
-          inputsList[inputId] = {
-            currentUser: userName,
-            color: color,
+          let focusedIndex = messageDictionary.containerList.findIndex(
+            (item: TContentContainer) => item.id === inputId
+          );
+          messageDictionary.containerList[focusedIndex] = {
+            ...messageDictionary.containerList[focusedIndex],
+            occupied: {
+              user: userName,
+              color: color,
+            },
           };
-          messageDictionary["inputsList"] = { ...inputsList };
+          messageDictionary["containerList"] = messageDictionary.containerList;
           break;
         case "inputBlurred":
-          inputsList[inputId] = null;
-          messageDictionary["inputsList"] = { ...inputsList };
+          const blurredIndex = messageDictionary.containerList.findIndex(
+            (item: TContentContainer) => item.id === inputId
+          );
+          messageDictionary.containerList[blurredIndex] = {
+            ...messageDictionary.containerList[blurredIndex],
+            occupied: null,
+          };
+          messageDictionary["containerList"] = messageDictionary.containerList;
           break;
         case "valueChange":
-          inputsList[inputId] = { ...inputsList[inputId], value: value };
-          messageDictionary["inputsList"] = { ...inputsList };
+          const valueChangeIndex = messageDictionary.containerList.findIndex(
+            (item: TContentContainer) => item.id === inputId
+          );
+          messageDictionary.containerList[valueChangeIndex] = {
+            ...messageDictionary.containerList[valueChangeIndex],
+            content: value,
+          };
+          messageDictionary["containerList"] = messageDictionary.containerList;
           break;
         case "mouseMove":
           usersList[socketID] = { ...usersList[socketID], position: position };
           messageDictionary["usersList"] = { ...usersList };
           break;
-        case "dragStart":
-          if (messageDictionary["dndList"]) {
-            const temp = list.findIndex(
-              (item: TListItem) => item.symbol === draggedId
-            );
-
-            list[temp] = { ...list[temp], color: usersList[socketID].color };
-            messageDictionary["dndList"] = list;
-          }
+        case "listChange":
+          messageDictionary["containerList"] = list;
           break;
-        case "dragEnd":
-          // Skicka tillbaka den nya listan
-          messageDictionary["dndList"] = list;
-          break;
-
         default:
           break;
       }
@@ -136,35 +137,3 @@ const server = Bun.serve<string>({
 });
 
 console.log(`Listening on localhost:${server.port}`);
-
-const dndServer = Bun.serve({
-  port: 3009,
-  fetch(req) {
-    const upgraded = dndServer.upgrade(req, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-
-    if (upgraded) return undefined;
-  },
-  websocket: {
-    publishToSelf: true,
-    open(ws) {
-      ws.subscribe("hehe");
-    },
-    message(ws, message) {
-      const socketID = ws.data?.toString();
-      const { topic, draggedId } =
-        typeof message === "string" ? JSON.parse(message) : null;
-
-      switch (topic) {
-        case "dragStart":
-          break;
-        default:
-          break;
-      }
-      ws.publish("hehe", JSON.stringify(messageDictionary));
-    },
-  },
-});
