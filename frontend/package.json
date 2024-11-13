@@ -8,13 +8,14 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "work": "vite --host --mode work"
+    "work": "vite --host --mode work",
+    "test": "vitest"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.6.0",
     "@mantine/core": "^7.12.2",
     "@mantine/hooks": "^7.12.2",
-    "@tabler/icons-react": "^3.16.0",
+    "@tabler/icons-react": "3.17.0",
     "lodash.throttle": "^4.1.1",
     "perfect-cursors": "^1.0.5",
     "postcss": "^8.4.45",
@@ -38,6 +39,7 @@
     "sass-embedded": "^1.79.4",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.8",
+    "vitest": "^2.1.3"
   }
 }

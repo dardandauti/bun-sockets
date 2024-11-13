@@ -1,10 +1,4 @@
-import {
-  createContext,
-  ReactNode,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 import { animals, colors } from "../assets/username_properties";
 import useWebSocket from "react-use-websocket";
 import { SendJsonMessage } from "react-use-websocket/dist/lib/types";
@@ -18,15 +12,21 @@ export type TUser = {
   position: TUserPosition;
 };
 
-export type TInputs = {
-  currentUser: string;
-  value: string;
+export type TContentContainer = {
+  id: string;
+  type: string;
+  content: string;
+  occupied: TContainerColor | null;
+};
+
+export type TContainerColor = {
+  user: string;
   color: string;
 };
 
 export type TMessageContainer = {
   usersList: Record<string, TUser>;
-  inputsList: Record<string, TInputs>;
+  containerList: TContentContainer[];
 };
 
 export type IContextProps = {
@@ -34,17 +34,23 @@ export type IContextProps = {
   setConnectedUsers: React.Dispatch<
     React.SetStateAction<Record<string, TUser> | undefined>
   >;
-  inputsList: Record<string, TInputs | null> | undefined;
-  setInputsList: React.Dispatch<
-    React.SetStateAction<Record<string, TInputs | null> | undefined>
-  >;
+  containerList: TContentContainer[];
+  setContainerList: React.Dispatch<React.SetStateAction<TContentContainer[]>>;
   me: Pick<TUser, "userName" | "color"> | null;
   setMe: React.Dispatch<
     React.SetStateAction<Pick<TUser, "userName" | "color"> | null>
   >;
   sendJsonMessage: SendJsonMessage;
   lastJsonMessage: unknown;
+  move: (from: number, to: number) => void;
 };
+// Temporary dummy data
+const inputData: TContentContainer[] = [
+  { id: "input1", occupied: null, content: "", type: "" },
+  { id: "input2", occupied: null, content: "", type: "" },
+  { id: "input3", occupied: null, content: "", type: "" },
+  { id: "input4", occupied: null, content: "", type: "" },
+];
 
 const SOCKET_URL = `ws://${import.meta.env.VITE_SOCKET_URL}:3000`;
 
@@ -52,8 +58,9 @@ export const CanvasContext = createContext<IContextProps | null>(null);
 
 const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
   const [connectedUsers, setConnectedUsers] = useState<Record<string, TUser>>();
-  const [inputsList, setInputsList] =
-    useState<Record<string, TInputs | null>>();
+  // containerList should be undefined at first load.
+  const [containerList, setContainerList] =
+    useState<TContentContainer[]>(inputData);
   const [me, setMe] = useState<Pick<TUser, "userName" | "color"> | null>(null);
 
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(SOCKET_URL, {
@@ -66,7 +73,7 @@ const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
 
       sendJsonMessage({
         topic: "createInputList",
-        inputsList,
+        containerList,
       });
 
       sendJsonMessage({
@@ -91,39 +98,53 @@ const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
+  function move(from: number, to: number) {
+    const placeholder = containerList[from];
+    const temp = [...containerList].filter((_, index) => index !== from);
+
+    temp.splice(to, 0, placeholder);
+
+    sendJsonMessage({
+      topic: "listChange",
+      list: temp,
+    });
+  }
+
   useEffect(() => {
     if (lastJsonMessage) {
       const typedResponse = lastJsonMessage as TMessageContainer;
       setConnectedUsers(typedResponse.usersList);
-      setInputsList(typedResponse.inputsList);
+      setContainerList(typedResponse.containerList);
     }
   }, [lastJsonMessage]);
 
-  useLayoutEffect(() => {
+  // Maybe need to use this to fetch data and then paint the DOM
+  /*  useLayoutEffect(() => {
     const childList = document.getElementById("parent")
       ?.children as HTMLCollection;
 
-    const list: Record<string, TInputs | null> = {};
+    const list: Record<string, TContentContainer | null>[] = [];
 
     childList &&
       Array.from(childList)
         .filter((child) => child.id.includes("input"))
         .forEach((child) => (list[child.id] = null));
 
-    setInputsList(list);
-  }, []);
+    setContainerList(list);
+  }, []); */
 
   return (
     <CanvasContext.Provider
       value={{
         connectedUsers,
         setConnectedUsers,
-        inputsList,
-        setInputsList,
+        containerList,
+        setContainerList,
         me,
         setMe,
         sendJsonMessage,
         lastJsonMessage,
+        move,
       }}
     >
       {children}

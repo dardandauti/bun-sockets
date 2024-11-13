@@ -1,5 +1,4 @@
 .inputWrapper {
-  --borderRadius: 6px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -13,6 +12,7 @@
       outline: none;
       border-radius: var(--borderRadius) 0px var(--borderRadius)
         var(--borderRadius);
+      border: solid 2px var(--borderColor);
     }
   }
   .inputName {
@@ -22,4 +22,24 @@
     font-size: 10px;
     color: white;
   }
+}
+
+.bubbleStyles {
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  margin: 2px;
+  color: white;
+  font-weight: bold;
+  font-size: 1;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 16;
+  align-items: flex-end;
 }
