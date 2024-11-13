@@ -1,5 +1,5 @@
 import { ActionIcon, Tooltip } from "@mantine/core";
-import classes from "./InputContainer.module.scss";
+import classes from "./NewsletterContainer.module.scss";
 import { useContext, useMemo } from "react";
 import { CanvasContext, IContextProps } from "../context/CanvasContextProvider";
 import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
@@ -17,7 +17,7 @@ const bubbleStyle = {
   alignItems: "center",
 };
 
-function InputContainer() {
+const NewsletterContainer = () => {
   const { connectedUsers, me, containerList, sendJsonMessage, move } =
     useContext(CanvasContext) as IContextProps;
 
@@ -25,7 +25,28 @@ function InputContainer() {
 
   const items = useMemo(
     () =>
-      containerList?.map((item, index) => (
+      containerList?.map(
+        (item, index) => {
+          switch (item.type) {
+            case "headline":
+              return <></>;
+
+            case "bread":
+              return <></>;
+
+            case "image":
+              return <></>;
+
+            case "sub-headline":
+              return <></>;
+
+            default:
+              break;
+          }
+        }
+        /* 
+
+
         <div key={item.id} className={classes.container}>
           <div id={`${item.id}_wrapper`} className={classes.inputWrapper}>
             {containerList[index].occupied && (
@@ -111,8 +132,10 @@ function InputContainer() {
               </ActionIcon>
             </div>
           </div>
-        </div>
+        </div> 
       )),
+      */
+      ),
     [containerList]
   );
 
@@ -163,6 +186,6 @@ function InputContainer() {
       </div>
     </div>
   );
-}
+};
 
-export default InputContainer;
+export default NewsletterContainer;

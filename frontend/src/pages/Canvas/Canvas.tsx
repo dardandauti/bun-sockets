@@ -1,7 +1,7 @@
 import throttle from "lodash.throttle";
 import { useContext, useEffect, useRef } from "react";
 import { Cursor } from "../../components/Cursor";
-import InputContainer from "../../components/InputContainer";
+import InputContainer from "../../components/NewsletterContainer";
 import {
   CanvasContext,
   IContextProps,
@@ -55,6 +55,7 @@ const Canvas = () => {
     <div>
       <h1>Canvas</h1>
       <InputContainer />
+
       {lastJsonMessage ? (
         renderCursors(
           lastJsonMessage as TMessageContainer,
