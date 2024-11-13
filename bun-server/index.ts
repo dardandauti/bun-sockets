@@ -18,6 +18,7 @@ type TListItem = {
   mass: number;
   symbol: string;
   name: string;
+  color: string;
 };
 
 const PORT = 3000;
@@ -30,13 +31,18 @@ const inputsList: Record<string, TInputs | null> = {};
 const dndList: TListItem[] = [];
 
 const messageDictionary: {
-  usersList: typeof usersList | undefined;
-  inputsList: typeof inputsList | undefined;
+  usersList: Record<string, TUser> | undefined;
+  inputsList: Record<string, TInputs | null> | undefined;
   dndList: typeof dndList | undefined;
+  dragging?: {
+    draggingUser: TUser;
+    draggedItem: TListItem;
+  };
+  resetColor?: boolean;
 } = {
   usersList: undefined,
   inputsList: undefined,
-  dndList: undefined,
+  dndList: dndList,
 };
 
 const server = Bun.serve<string>({
@@ -61,8 +67,17 @@ const server = Bun.serve<string>({
     },
     message(ws, message) {
       const socketID = ws.data.toString();
-      const { topic, userName, color, inputId, list, value, position } =
-        typeof message === "string" ? JSON.parse(message) : null;
+      const {
+        topic,
+        userName,
+        color,
+        inputId,
+        list,
+        value,
+        position,
+        draggableId,
+        destination,
+      } = typeof message === "string" ? JSON.parse(message) : null;
 
       switch (topic) {
         case "createInputList":
@@ -95,9 +110,70 @@ const server = Bun.serve<string>({
           usersList[socketID] = { ...usersList[socketID], position: position };
           messageDictionary["usersList"] = { ...usersList };
           break;
-        case "dragEnd":
-          // Skicka tillbaka den nya listan
+        /*
+          Aktiveras när en Draggable-komponent börjar dras och skickar "dragStart" som topic.
+          Sätter `dragging` i `messageDictionary` till ett objekt som innehåller information om användaren som drar och det objekt som dras.
+          Detta gör att andra användare kan se vilken användare som drar ett objekt och vilken färg de har.
+          Innehåll:
+          - topic: "dragStart",
+          - draggableId: id för det dragna objektet,
+          - userName: namnet på användaren som drar,
+          - color: användarens färg.
+          */
+        case "dragStart":
+          messageDictionary.dragging = {
+            draggingUser: { userName, color, position: { x: 0, y: 0 } },
+            draggedItem: {
+              symbol: draggableId,
+              name: "",
+              mass: 0,
+              position: 0,
+              color: color,
+            },
+          };
+          break;
+        /*
+          Aktiveras när en Draggable-komponent dras till en ny position och skickar "dragUpdate" som topic.
+          Uppdaterar `dragging` i `messageDictionary`.
+          Tillåter andra användare att se var objektet befinner sig under dragningen.
+          Innehåll:
+          - topic: "dragUpdate",
+          - draggableId: id för det dragna objektet,
+          - destination: den nya positionen.
+          */
+        case "dragUpdate":
+          if (destination !== undefined) {
+            messageDictionary.dragging = {
+              draggingUser: { userName, color, position: { x: 0, y: 0 } },
+              draggedItem: {
+                symbol: draggableId,
+                name: "",
+                mass: 0,
+                position: destination,
+                color: color,
+              },
+            };
+          }
+          break;
+        case "updateList":
           messageDictionary["dndList"] = list;
+          break;
+        /*
+          Aktiveras när en Draggable-komponent släpps och skickar "dragEnd" som topic.
+          Tar bort `dragging` informationen från `messageDictionary` för att signalera att ingen dragning längre pågår.
+          Uppdaterar `dndList` med den slutliga versionen av listan efter dragningen och sätter `resetColor` till true för att återställa färgen på objektet.
+          Innehåll:
+          - topic: "dragEnd",
+          - list: den slutliga listan efter att dragningen är klar,
+          - resetColor: för att signalera att användarens färg ska återställas.
+          */
+
+        case "dragEnd":
+          if (messageDictionary.dragging) {
+            delete messageDictionary.dragging;
+          }
+          messageDictionary["dndList"] = list;
+          messageDictionary["resetColor"] = true;
           break;
 
         default:
@@ -117,7 +193,7 @@ const server = Bun.serve<string>({
 });
 
 console.log(`Listening on localhost:${server.port}`);
-
+/*
 const dndServer = Bun.serve({
   port: 3009,
   fetch(req) {
@@ -139,3 +215,4 @@ const dndServer = Bun.serve({
     },
   },
 });
+*/

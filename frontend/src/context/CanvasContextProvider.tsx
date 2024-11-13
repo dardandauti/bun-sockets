@@ -30,12 +30,19 @@ export type TListItem = {
   mass: number;
   symbol: string;
   name: string;
+  color: string;
 };
 
 export type TMessageContainer = {
+  topic?: string;
+  userName?: string;
   usersList: Record<string, TUser>;
   inputsList: Record<string, TInputs>;
   dndList: TListItem[];
+  dragging?: {
+    draggingUser: TUser;
+    draggedItem: TListItem;
+  };
 };
 
 export type IContextProps = {
@@ -58,11 +65,11 @@ export type IContextProps = {
 };
 
 const data: TListItem[] = [
-  { position: 6, mass: 12.011, symbol: "C", name: "Carbon" },
-  { position: 7, mass: 14.007, symbol: "N", name: "Nitrogen" },
-  { position: 39, mass: 88.906, symbol: "Y", name: "Yttrium" },
-  { position: 56, mass: 137.33, symbol: "Ba", name: "Barium" },
-  { position: 58, mass: 140.12, symbol: "Ce", name: "Cerium" },
+  { position: 6, mass: 12.011, symbol: "C", name: "Carbon", color: "" },
+  { position: 7, mass: 14.007, symbol: "N", name: "Nitrogen", color: "" },
+  { position: 39, mass: 88.906, symbol: "Y", name: "Yttrium", color: "" },
+  { position: 56, mass: 137.33, symbol: "Ba", name: "Barium", color: "" },
+  { position: 58, mass: 140.12, symbol: "Ce", name: "Cerium", color: "" },
 ];
 
 const SOCKET_URL = `ws://${import.meta.env.VITE_SOCKET_URL}:3000`;
