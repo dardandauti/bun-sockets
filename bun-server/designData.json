@@ -1,0 +1,32 @@
+[
+  {
+    "id": "7d9f8f24-8a32-4d80-a63a-7987f94c726b",
+    "content": "",
+    "type": "headline",
+    "occupied": null
+  },
+  {
+    "id": "44b2c7ad-b226-455f-b22b-fb7c8e2f1c44",
+    "content": "",
+    "type": "image",
+    "occupied": null
+  },
+  {
+    "id": "896d98bb-bf5f-4fa2-9f7b-2b5999d61c3c",
+    "content": "",
+    "type": "bread",
+    "occupied": null
+  },
+  {
+    "id": "3f33b6f3-5c89-4416-a75a-b7fe379f45d2",
+    "content": "",
+    "type": "sub-headline",
+    "occupied": null
+  },
+  {
+    "id": "1a7f79c5-167d-4902-bcc2-18f9b445e2f1",
+    "content": "",
+    "type": "bread",
+    "occupied": null
+  }
+]

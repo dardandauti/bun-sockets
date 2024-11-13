@@ -26,12 +26,14 @@ const PORT = 3000;
 
 const usersList: Record<string, TUser> = {};
 
+const fetchedList = await Bun.file("./designData.json").json();
+
 const messageDictionary: {
   usersList: typeof usersList | undefined;
   containerList: TContentContainer[];
 } = {
   usersList: undefined,
-  containerList: [],
+  containerList: fetchedList,
 };
 
 const server = Bun.serve<string>({
@@ -54,24 +56,13 @@ const server = Bun.serve<string>({
       ws.subscribe("general");
       ws.publish("general", JSON.stringify(messageDictionary));
     },
+
     message(ws, message) {
       const socketID = ws.data.toString();
-      const {
-        topic,
-        userName,
-        color,
-        inputId,
-        containerList,
-        list,
-        value,
-        position,
-      } = typeof message === "string" ? JSON.parse(message) : null;
+      const { topic, userName, color, inputId, list, value, position } =
+        typeof message === "string" ? JSON.parse(message) : null;
 
       switch (topic) {
-        case "createInputList":
-          messageDictionary["containerList"] =
-            containerList as typeof messageDictionary.containerList;
-          break;
         case "addNew":
           usersList[socketID] = {
             userName: userName,

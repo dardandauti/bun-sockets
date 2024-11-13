@@ -44,13 +44,6 @@ export type IContextProps = {
   lastJsonMessage: unknown;
   move: (from: number, to: number) => void;
 };
-// Temporary dummy data
-const inputData: TContentContainer[] = [
-  { id: "input1", occupied: null, content: "", type: "" },
-  { id: "input2", occupied: null, content: "", type: "" },
-  { id: "input3", occupied: null, content: "", type: "" },
-  { id: "input4", occupied: null, content: "", type: "" },
-];
 
 const SOCKET_URL = `ws://${import.meta.env.VITE_SOCKET_URL}:3000`;
 
@@ -58,9 +51,7 @@ export const CanvasContext = createContext<IContextProps | null>(null);
 
 const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
   const [connectedUsers, setConnectedUsers] = useState<Record<string, TUser>>();
-  // containerList should be undefined at first load.
-  const [containerList, setContainerList] =
-    useState<TContentContainer[]>(inputData);
+  const [containerList, setContainerList] = useState<TContentContainer[]>([]);
   const [me, setMe] = useState<Pick<TUser, "userName" | "color"> | null>(null);
 
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(SOCKET_URL, {
@@ -70,11 +61,6 @@ const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
         animals[Math.floor(Math.random() * 20)]
       }`;
       const color = "#" + Math.floor(Math.random() * 16777215).toString(16);
-
-      sendJsonMessage({
-        topic: "createInputList",
-        containerList,
-      });
 
       sendJsonMessage({
         topic: "addNew",
