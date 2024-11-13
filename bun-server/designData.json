@@ -1,31 +1,31 @@
 [
   {
     "id": "7d9f8f24-8a32-4d80-a63a-7987f94c726b",
-    "content": "",
+    "content": "Headline Title",
     "type": "headline",
     "occupied": null
   },
   {
     "id": "44b2c7ad-b226-455f-b22b-fb7c8e2f1c44",
-    "content": "",
+    "content": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=640&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "type": "image",
     "occupied": null
   },
   {
     "id": "896d98bb-bf5f-4fa2-9f7b-2b5999d61c3c",
-    "content": "",
+    "content": "The latest smartphone release from XYZ Corp promises to redefine mobile gaming, offering faster processing speeds and an immersive AR experience that pushes the limits of current hardware.",
     "type": "bread",
     "occupied": null
   },
   {
     "id": "3f33b6f3-5c89-4416-a75a-b7fe379f45d2",
-    "content": "",
+    "content": "In other news",
     "type": "sub-headline",
     "occupied": null
   },
   {
     "id": "1a7f79c5-167d-4902-bcc2-18f9b445e2f1",
-    "content": "",
+    "content": "Cybersecurity experts are warning businesses about the increasing sophistication of ransomware attacks, urging companies to prioritize data encryption and employee training to mitigate risk.",
     "type": "bread",
     "occupied": null
   }
