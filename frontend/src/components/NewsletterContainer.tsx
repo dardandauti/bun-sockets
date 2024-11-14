@@ -3,6 +3,9 @@ import classes from "./NewsletterContainer.module.scss";
 import { useContext, useMemo } from "react";
 import { CanvasContext, IContextProps } from "../context/CanvasContextProvider";
 import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
+import Headline from "./Headline";
+import Bodytext from "./Bodytext";
+import SubHeadline from "./SubHeadline";
 
 const bubbleStyle = {
   borderRadius: "50%",
@@ -23,22 +26,87 @@ const NewsletterContainer = () => {
 
   const borderRadius = "6px";
 
+  const handleOnChange = (id, value) => {
+    sendJsonMessage({
+      topic: "valueChange",
+      inputId: id,
+      value: value,
+    });
+  };
+
+  const handleOnFocus = (id) => {
+    sendJsonMessage({
+      topic: "inputFocused",
+      inputId: id,
+      userName: me?.userName,
+      color: me?.color,
+    });
+  };
+
+  const handleOnBlur = (id) => {
+    sendJsonMessage({
+      topic: "inputBlurred",
+      inputId: id,
+      userName: me?.userName,
+    });
+  };
+
   const items = useMemo(
     () =>
       containerList?.map(
         (item, index) => {
+          const borderColor = item.occupied
+            ? item.occupied.color
+            : "transparent";
+
           switch (item.type) {
             case "headline":
-              return <></>;
+              return (
+                <div className={classes.container}>
+                  <Headline
+                    key={item.id}
+                    content={item.content}
+                    onChange={handleOnChange}
+                    onFocus={() => handleOnFocus(item.id)}
+                    onBlur={() => handleOnBlur(item.id)}
+                    id={item.id}
+                    borderColor={borderColor}
+                  />
+                </div>
+              );
 
             case "bread":
-              return <></>;
+              return (
+                <div className={classes.container}>
+                  <Bodytext
+                    key={item.id}
+                    content={item.content}
+                    onChange={handleOnChange}
+                    onFocus={() => handleOnFocus(item.id)}
+                    onBlur={() => handleOnBlur(item.id)}
+                    id={item.id}
+                    borderColor={borderColor}
+                  />
+                </div>
+              );
 
             case "image":
               return <></>;
 
             case "sub-headline":
-              return <></>;
+              return (
+                <div className={classes.container}>
+                  <SubHeadline
+                    key={item.id}
+                    content={item.content}
+                    onChange={handleOnChange}
+                    onFocus={() => handleOnFocus(item.id)}
+                    onBlur={() => handleOnBlur(item.id)}
+                    id={item.id}
+                    borderColor={borderColor}
+                  />
+                </div>
+              );
 
             default:
               break;
