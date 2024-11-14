@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import ComponentContainer from "./ComponentContainer";
-import { TContentContainer } from "../context/CanvasContextProvider";
+import {
+  CanvasContext,
+  IContextProps,
+  TContentContainer,
+} from "../context/CanvasContextProvider";
 
 const ImageInput = ({ item }: { item: TContentContainer }) => {
   const { id, content } = item;
   const [imagePath, setImagePath] = useState<any>(content);
+
+  const { sendJsonMessage } = useContext(CanvasContext) as IContextProps;
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = Array.from(e.target.files ?? [])[0];
@@ -15,6 +21,11 @@ const ImageInput = ({ item }: { item: TContentContainer }) => {
       () => {
         // convert image file to base64 string
         setImagePath(reader.result);
+        sendJsonMessage({
+          topic: "valueChange",
+          inputId: e.target.id,
+          value: reader.result,
+        });
       },
       false
     );
@@ -26,8 +37,11 @@ const ImageInput = ({ item }: { item: TContentContainer }) => {
 
   return (
     <ComponentContainer componentId={id}>
-      <input type="file" onChange={(e) => handleUpload(e)} />
-      <img src={imagePath} />
+      {imagePath ? (
+        <img src={imagePath} />
+      ) : (
+        <input type="file" id={id} onChange={(e) => handleUpload(e)} />
+      )}
     </ComponentContainer>
   );
 };

@@ -26,9 +26,10 @@
 
     &:hover {
       border: solid 2px #4378ff;
-      input {
-        border: dashed 1px #4378ff;
-      }
+    }
+    img {
+      width: 100%;
+      object-fit: contain;
     }
     input {
       // Removes styling from default input

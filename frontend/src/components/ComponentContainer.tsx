@@ -1,6 +1,8 @@
 import { ReactNode, useContext, useMemo } from "react";
 import { CanvasContext, IContextProps } from "../context/CanvasContextProvider";
 import classes from "./NewsletterContainer.module.scss";
+import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
+import { ActionIcon } from "@mantine/core";
 
 const ComponentContainer = ({
   componentId,
@@ -9,17 +11,24 @@ const ComponentContainer = ({
   componentId: string;
   children: ReactNode;
 }) => {
-  const { me, containerList } = useContext(CanvasContext) as IContextProps;
+  const { me, containerList, move } = useContext(
+    CanvasContext
+  ) as IContextProps;
 
   const temp = useMemo(
     () => containerList.find((item) => item.id === componentId),
     [containerList]
   );
 
+  const index = useMemo(
+    () => containerList.findIndex((item) => item.id === componentId),
+    [containerList]
+  );
+
   return (
     <div id={`${componentId}_wrapper`} className={classes.containerWrapper}>
       <div
-        key={componentId}
+        key={`${componentId}_container`}
         style={
           temp?.occupied
             ? {
@@ -41,6 +50,38 @@ const ComponentContainer = ({
           </p>
         )}
         {children}
+      </div>
+      <div
+        key={`${componentId}_utilities`}
+        className={classes.item}
+        style={{ gap: "16px" }}
+      >
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <ActionIcon
+            variant="subtle"
+            disabled={
+              index === 0 ||
+              (containerList[index].occupied
+                ? containerList[index].occupied.user !== me?.userName
+                : false)
+            }
+            onClick={() => move(index, index - 1)}
+          >
+            <IconArrowUp />
+          </ActionIcon>
+          <ActionIcon
+            variant="subtle"
+            disabled={
+              index === containerList.length - 1 ||
+              (containerList[index].occupied
+                ? containerList[index].occupied.user !== me?.userName
+                : false)
+            }
+            onClick={() => move(index, index + 1)}
+          >
+            <IconArrowDown />
+          </ActionIcon>
+        </div>
       </div>
     </div>
   );

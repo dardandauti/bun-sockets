@@ -4,6 +4,7 @@ import { useContext, useMemo } from "react";
 import { CanvasContext, IContextProps } from "../context/CanvasContextProvider";
 import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
 import ComponentContainer from "./ComponentContainer";
+import ImageInput from "./ImageInput";
 
 const bubbleStyle = {
   borderRadius: "50%",
@@ -35,7 +36,7 @@ const NewsletterContainer = () => {
               return <></>;
 
             case "image":
-              return <></>;
+              return <ImageInput item={item} />;
 
             case "sub-headline":
               return <></>;
@@ -174,7 +175,6 @@ const NewsletterContainer = () => {
         )}
       </div>
       <div
-        id="parent"
         style={{
           display: "flex",
           gap: 8,
