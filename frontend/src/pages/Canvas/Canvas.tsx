@@ -39,7 +39,7 @@ const Canvas = () => {
 
   const sendThrottledMessage = useRef(throttle(sendJsonMessage, 50));
 
-  useEffect(() => {
+  /* useEffect(() => {
     window.addEventListener("mousemove", (e) => {
       sendThrottledMessage.current({
         topic: "mouseMove",
@@ -49,7 +49,7 @@ const Canvas = () => {
         },
       });
     });
-  }, []);
+  }, []); */
 
   return (
     <div>

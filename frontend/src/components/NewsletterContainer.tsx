@@ -6,6 +6,8 @@ import { IconArrowDown, IconArrowUp } from "@tabler/icons-react";
 import Headline from "./Headline";
 import Bodytext from "./Bodytext";
 import SubHeadline from "./SubHeadline";
+import ComponentContainer from "./ComponentContainer";
+import ImageInput from "./ImageInput";
 
 const bubbleStyle = {
   borderRadius: "50%",
@@ -21,10 +23,9 @@ const bubbleStyle = {
 };
 
 const NewsletterContainer = () => {
-  const { connectedUsers, me, containerList, sendJsonMessage, move } =
-    useContext(CanvasContext) as IContextProps;
-
-  const borderRadius = "6px";
+  const { connectedUsers, me, containerList, sendJsonMessage } = useContext(
+    CanvasContext
+  ) as IContextProps;
 
   const handleOnChange = (id, value) => {
     sendJsonMessage({
@@ -62,7 +63,7 @@ const NewsletterContainer = () => {
           switch (item.type) {
             case "headline":
               return (
-                <div className={classes.container}>
+                <ComponentContainer key={item.id} componentId={item.id}>
                   <Headline
                     key={item.id}
                     content={item.content}
@@ -72,12 +73,12 @@ const NewsletterContainer = () => {
                     id={item.id}
                     borderColor={borderColor}
                   />
-                </div>
+                </ComponentContainer>
               );
 
             case "bread":
               return (
-                <div className={classes.container}>
+                <ComponentContainer key={item.id} componentId={item.id}>
                   <Bodytext
                     key={item.id}
                     content={item.content}
@@ -87,15 +88,15 @@ const NewsletterContainer = () => {
                     id={item.id}
                     borderColor={borderColor}
                   />
-                </div>
+                </ComponentContainer>
               );
 
             case "image":
-              return <></>;
+              return <ImageInput key={item.id} item={item} />;
 
             case "sub-headline":
               return (
-                <div className={classes.container}>
+                <ComponentContainer key={item.id} componentId={item.id}>
                   <SubHeadline
                     key={item.id}
                     content={item.content}
@@ -105,7 +106,7 @@ const NewsletterContainer = () => {
                     id={item.id}
                     borderColor={borderColor}
                   />
-                </div>
+                </ComponentContainer>
               );
 
             default:
@@ -113,7 +114,6 @@ const NewsletterContainer = () => {
           }
         }
         /* 
-
 
         <div key={item.id} className={classes.container}>
           <div id={`${item.id}_wrapper`} className={classes.inputWrapper}>
@@ -243,7 +243,6 @@ const NewsletterContainer = () => {
         )}
       </div>
       <div
-        id="parent"
         style={{
           display: "flex",
           gap: 8,
