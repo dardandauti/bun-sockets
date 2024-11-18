@@ -1,4 +1,18 @@
-const Headline = ({ content, onChange, onFocus, onBlur, id, borderColor }) => {
+const Headline = ({
+  content,
+  id,
+  onChange,
+  onFocus,
+  onBlur,
+  borderColor,
+}: {
+  content: string;
+  id: string;
+  onChange: (id: string, value: string) => void;
+  onFocus: () => void;
+  onBlur: () => void;
+  borderColor: string;
+}) => {
   return (
     <input
       type="text"

@@ -27,7 +27,7 @@ const NewsletterContainer = () => {
     CanvasContext
   ) as IContextProps;
 
-  const handleOnChange = (id, value) => {
+  const handleOnChange = (id: string, value: string) => {
     sendJsonMessage({
       topic: "valueChange",
       inputId: id,
@@ -35,7 +35,7 @@ const NewsletterContainer = () => {
     });
   };
 
-  const handleOnFocus = (id) => {
+  const handleOnFocus = (id: string) => {
     sendJsonMessage({
       topic: "inputFocused",
       inputId: id,
@@ -44,7 +44,7 @@ const NewsletterContainer = () => {
     });
   };
 
-  const handleOnBlur = (id) => {
+  const handleOnBlur = (id: string) => {
     sendJsonMessage({
       topic: "inputBlurred",
       inputId: id,
@@ -54,156 +54,62 @@ const NewsletterContainer = () => {
 
   const items = useMemo(
     () =>
-      containerList?.map(
-        (item, index) => {
-          const borderColor = item.occupied
-            ? item.occupied.color
-            : "transparent";
+      containerList?.map((item, index) => {
+        const borderColor = item.occupied ? item.occupied.color : "transparent";
 
-          switch (item.type) {
-            case "headline":
-              return (
-                <ComponentContainer key={item.id} componentId={item.id}>
-                  <Headline
-                    key={item.id}
-                    content={item.content}
-                    onChange={handleOnChange}
-                    onFocus={() => handleOnFocus(item.id)}
-                    onBlur={() => handleOnBlur(item.id)}
-                    id={item.id}
-                    borderColor={borderColor}
-                  />
-                </ComponentContainer>
-              );
+        switch (item.type) {
+          case "headline":
+            return (
+              <ComponentContainer key={item.id} componentId={item.id}>
+                <Headline
+                  key={item.id}
+                  content={item.content}
+                  onChange={handleOnChange}
+                  onFocus={() => handleOnFocus(item.id)}
+                  onBlur={() => handleOnBlur(item.id)}
+                  id={item.id}
+                  borderColor={borderColor}
+                />
+              </ComponentContainer>
+            );
 
-            case "bread":
-              return (
-                <ComponentContainer key={item.id} componentId={item.id}>
-                  <Bodytext
-                    key={item.id}
-                    content={item.content}
-                    onChange={handleOnChange}
-                    onFocus={() => handleOnFocus(item.id)}
-                    onBlur={() => handleOnBlur(item.id)}
-                    id={item.id}
-                    borderColor={borderColor}
-                  />
-                </ComponentContainer>
-              );
+          case "bread":
+            return (
+              <ComponentContainer key={item.id} componentId={item.id}>
+                <Bodytext
+                  key={item.id}
+                  content={item.content}
+                  onChange={handleOnChange}
+                  onFocus={() => handleOnFocus(item.id)}
+                  onBlur={() => handleOnBlur(item.id)}
+                  id={item.id}
+                  borderColor={borderColor}
+                />
+              </ComponentContainer>
+            );
 
-            case "image":
-              return <ImageInput key={item.id} item={item} />;
+          case "image":
+            return <ImageInput key={item.id} item={item} />;
 
-            case "sub-headline":
-              return (
-                <ComponentContainer key={item.id} componentId={item.id}>
-                  <SubHeadline
-                    key={item.id}
-                    content={item.content}
-                    onChange={handleOnChange}
-                    onFocus={() => handleOnFocus(item.id)}
-                    onBlur={() => handleOnBlur(item.id)}
-                    id={item.id}
-                    borderColor={borderColor}
-                  />
-                </ComponentContainer>
-              );
+          case "sub-headline":
+            return (
+              <ComponentContainer key={item.id} componentId={item.id}>
+                <SubHeadline
+                  key={item.id}
+                  content={item.content}
+                  onChange={handleOnChange}
+                  onFocus={() => handleOnFocus(item.id)}
+                  onBlur={() => handleOnBlur(item.id)}
+                  id={item.id}
+                  borderColor={borderColor}
+                />
+              </ComponentContainer>
+            );
 
-            default:
-              break;
-          }
+          default:
+            break;
         }
-        /* 
-
-        <div key={item.id} className={classes.container}>
-          <div id={`${item.id}_wrapper`} className={classes.inputWrapper}>
-            {containerList[index].occupied && (
-              <p
-                style={{
-                  backgroundColor: containerList[index].occupied.color,
-                }}
-                className={classes.inputName}
-              >
-                {containerList[index].occupied.user !== me?.userName
-                  ? containerList[index].occupied.user
-                  : "Me"}
-              </p>
-            )}
-            <input
-              placeholder={item.id}
-              id={containerList[index].id}
-              style={
-                containerList[index].occupied
-                  ? {
-                      border: `solid 2px ${containerList[index].occupied.color}`,
-                      borderRadius: `${borderRadius} 0px ${borderRadius} ${borderRadius}`,
-                    }
-                  : undefined
-              }
-              className={classes.input}
-              value={containerList[index].content}
-              onChange={(e) => {
-                sendJsonMessage({
-                  topic: "valueChange",
-                  inputId: e.target.id,
-                  value: e.target.value,
-                });
-              }}
-              onFocus={(e) => {
-                sendJsonMessage({
-                  topic: "inputFocused",
-                  inputId: e.target.id,
-                  userName: me?.userName,
-                  color: me?.color,
-                });
-              }}
-              disabled={
-                containerList[index].occupied
-                  ? containerList[index].occupied.user !== me?.userName
-                  : false
-              }
-              onBlur={(e) => {
-                sendJsonMessage({
-                  topic: "inputBlurred",
-                  inputId: e.target.id,
-                  userName: me?.userName,
-                });
-              }}
-            />
-          </div>
-
-          <div key={item.id} className={classes.item} style={{ gap: "16px" }}>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <ActionIcon
-                variant="subtle"
-                disabled={
-                  index === 0 ||
-                  (containerList[index].occupied
-                    ? containerList[index].occupied.user !== me?.userName
-                    : false)
-                }
-                onClick={() => move(index, index - 1)}
-              >
-                <IconArrowUp />
-              </ActionIcon>
-              <ActionIcon
-                variant="subtle"
-                disabled={
-                  index === containerList.length - 1 ||
-                  (containerList[index].occupied
-                    ? containerList[index].occupied.user !== me?.userName
-                    : false)
-                }
-                onClick={() => move(index, index + 1)}
-              >
-                <IconArrowDown />
-              </ActionIcon>
-            </div>
-          </div>
-        </div> 
-      )),
-      */
-      ),
+      }),
     [containerList]
   );
 

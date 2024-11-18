@@ -1,10 +1,17 @@
 const SubHeadline = ({
   content,
+  id,
   onChange,
   onFocus,
   onBlur,
-  id,
   borderColor,
+}: {
+  content: string;
+  id: string;
+  onChange: (id: string, value: string) => void;
+  onFocus: () => void;
+  onBlur: () => void;
+  borderColor: string;
 }) => {
   return (
     <input

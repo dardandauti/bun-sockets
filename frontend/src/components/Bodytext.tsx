@@ -1,4 +1,18 @@
-const Bodytext = ({ content, onChange, onFocus, onBlur, id, borderColor }) => {
+const Bodytext = ({
+  content,
+  id,
+  onChange,
+  onFocus,
+  onBlur,
+  borderColor,
+}: {
+  content: string;
+  id: string;
+  onChange: (id: string, value: string) => void;
+  onFocus: () => void;
+  onBlur: () => void;
+  borderColor: string;
+}) => {
   return (
     <textarea
       value={content}
