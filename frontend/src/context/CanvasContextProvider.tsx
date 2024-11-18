@@ -85,7 +85,10 @@ const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
   });
 
   function move(from: number, to: number) {
-    const placeholder = containerList[from];
+    const placeholder = {
+      ...containerList[from],
+      occupied: { user: me?.userName || "", color: me?.color || "" },
+    };
     const temp = [...containerList].filter((_, index) => index !== from);
 
     temp.splice(to, 0, placeholder);
@@ -94,6 +97,17 @@ const CanvasContextProvider = ({ children }: { children: ReactNode }) => {
       topic: "listChange",
       list: temp,
     });
+
+    setTimeout(() => {
+      const clearedList = temp.map((item, index) =>
+        index === to ? { ...item, occupied: null } : item
+      );
+      setContainerList(clearedList);
+      sendJsonMessage({
+        topic: "listChange",
+        list: clearedList,
+      });
+    }, 500);
   }
 
   useEffect(() => {
